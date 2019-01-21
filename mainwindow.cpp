@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QFile>
+#include <QDateTime>
 
 /*!
  * \class MainWindow
@@ -37,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connectHandlers();
     configureSerialPort();
     createUi();
-    //setFixedSize(QSize(750, 400));
+    setFixedSize(QSize(650, 350));
     loadCss();
 }
 
@@ -115,14 +116,16 @@ void MainWindow::createUi()
     tempLayout = new QVBoxLayout;
     extLayout = new QVBoxLayout;
 
-    dateLabel = new QLabel("Niedziela, 20 sty 2019");
-    tempLabel = new QLabel("21.3°");
-    cloudLabel = new QLabel("Zachmurzenie częściowe");
-    pressureLabel = new QLabel("Ciśnienie: 999Pa");
-    humidityLabel = new QLabel("Wilgotność: 56%");
-    percTempLabel = new QLabel("Temp. odczuwalna: 24.4°");
-    bioCondLabel = new QLabel("Biomet: korzystny");
-    lunarLabel = new QLabel("Księżyc: 56%");
+    QDate date = QDate::currentDate();
+    QLocale locale;
+    dateLabel = new QLabel(QString("%1 %2 %3, %4").arg(date.day()).arg(locale.monthName(date.month())).arg(date.year()).arg(locale.dayName(date.dayOfWeek())));
+    tempLabel = new QLabel("--.--");
+    cloudLabel = new QLabel("-----");
+    pressureLabel = new QLabel("Ciśnienie: ---");
+    humidityLabel = new QLabel("Wilgotność: ---");
+    percTempLabel = new QLabel("Temp. odczuwalna: ---");
+    bioCondLabel = new QLabel("Biomet: ---");
+    lunarLabel = new QLabel("Księżyc: ---");
 
     QFont font = dateLabel->font();
     font.setPointSize(13);
@@ -189,6 +192,10 @@ void MainWindow::onTimerTimeout()
     dataWrite.clear();
     dataWrite.append(SendAllCommand);
     serial.write(dataWrite);
+
+    QDate date = QDate::currentDate();
+    QLocale locale;
+    dateLabel->setText(QString("%1 %2 %3, %4").arg(date.day()).arg(locale.monthName(date.month())).arg(date.year()).arg(locale.dayName(date.dayOfWeek())));
 }
 
 /*!

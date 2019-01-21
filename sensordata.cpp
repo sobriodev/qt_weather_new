@@ -1,5 +1,6 @@
 #include "sensordata.h"
 #include "util.h"
+#include <QDebug>
 
 /*!
  * \class SensorData
@@ -74,7 +75,7 @@ void SensorData::setPressure(double value)
  */
 QString SensorData::calcCloudiness() const
 {
-    double oktan = 4 + (1013.25-pressure) / 8 - (75 - humidity) / 70;
+    double oktan = 4 + (1013.25-(pressure/100)) / 8 - (75 - humidity) / 70;
     if (oktan < 0) {
         oktan = 0;
     }
@@ -106,7 +107,7 @@ QString SensorData::calcCloudiness() const
 double SensorData::calcPerseivedTemperature() const
 {
     double sensedT = 0, idealPressure = 1013.25, idealHumidity = 75;
-    double increaseTemperature = (pressure - idealPressure) / 8;
+    double increaseTemperature = ((pressure/100) - idealPressure) / 8;
     if (Util::seasonDate()) {
         sensedT = temperature + increaseTemperature;
     } else {
@@ -123,6 +124,7 @@ QString SensorData::calcBioConds() const
 {
     int b = 1;
 
+    double pressure = this->pressure/100;
     if ((pressure > 1021 && pressure < 1029) || (pressure > 997 && pressure < 1005)){
         b = 0;
     }
@@ -161,7 +163,7 @@ QString SensorData::calcLunarProperties() const
        z = 100 - z;
     }
     QString d = phase <=50 ? "rośnie":"maleje";
-    return QString("%1 (%2)").arg(QString::number(z, 'f', 2)).arg(d);
+    return QString("%1% (%2)").arg(QString::number(z*2, 'f', 2)).arg(d);
 }
 
 /*!
